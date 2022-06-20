@@ -12,6 +12,7 @@ enum SPOT_STATE {
     WHITE = 2
 };
 enum SEQUENCE {
+    
     ALIVE_1 = 50,
     DEAD_1 = 10,
     ALIVE_2 = 500,
