@@ -277,6 +277,14 @@ int MinMax(int depth, int maxminplayer, std::ostream &fout){
                     if(check_neighbor(i, j) == false)
                         continue;
                     board[i][j] = maxminplayer;
+                    if(depth == 3){
+                        int num = value(maxminplayer);
+                        if(num >= WIN_5){
+                            fout << i << " " << j << std::endl;
+                            fout.flush();
+                            return 0;
+                        }
+                    }
                     tmp = MinMax(depth - 1, opponent, fout);
                     if(tmp > val){
                         val = tmp;
@@ -309,6 +317,7 @@ int MinMax(int depth, int maxminplayer, std::ostream &fout){
         return val;
     }
 }
+
 int alpha_beta(int depth, int maxminplayer,int alpha, int beta,std::ostream &fout){
     if(depth == 0){
         return value(player) - 1.3*value(opponent);
