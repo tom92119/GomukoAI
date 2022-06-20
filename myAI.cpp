@@ -12,18 +12,18 @@ enum SPOT_STATE {
     WHITE = 2
 };
 enum SEQUENCE {
-    
-    ALIVE_1 = 50,
-    DEAD_1 = 10,
-    ALIVE_2 = 500,
-    DEAD_2 = 100,
-    ALIVE_3 = 10000,
-    DEAD_3 = 4000,
-    ALIVE_4 = 75000,
-    DEAD_4 = 30000,
-    WIN_5 = 2000000,
+    ALIVE_1 = 10,
+    DEAD_1 = 0,
+    ALIVE_2 = 100,
+    DEAD_2 = 10,
+    ALIVE_3 = 1000,
+    DEAD_3 = 100,
+    ALIVE_4 = 10000,
+    DEAD_4 = 1000,
+    WIN_5 = 10000000,
     DOUBLE_DEAD = 0,
 };
+int bonus[3] = {0}; // [0]活三[1]活四[2]死四
 int player;
 int opponent;
 const int SIZE = 15;
@@ -49,14 +49,23 @@ int score_table(int num, int empty){
         return DOUBLE_DEAD;
 
     if(num == 4){
-        if(empty == 2)
+        if(empty == 2){
+            bonus[1] ++;
             return ALIVE_4;
-        else
+        }
+          
+        else{
+            bonus[2] ++;
             return DEAD_4;
+        }
+            
     }
     if(num == 3){
-        if(empty == 2)
+        if(empty == 2){
+            bonus[0] ++;
             return ALIVE_3;
+        }
+            
         else
             return DEAD_3;
     }
@@ -75,6 +84,9 @@ int score_table(int num, int empty){
 
 }
 int value(int chess){
+    for(int i = 0; i < 3; i ++){
+        bonus[i] == 0;
+    }
     int op;
     if(chess == BLACK)
         op = WHITE;
@@ -241,6 +253,8 @@ int value(int chess){
         }
         val += score_table(serial_cnt, empty);
     }
+    if(bonus[1] >= 1 || bonus[0] >=2 || bonus[2] >= 2 || (bonus[0] >= 1 && bonus[2] >= 1))
+        val += 500000;
     return val;
 }
 
@@ -297,7 +311,7 @@ int MinMax(int depth, int maxminplayer, std::ostream &fout){
 }
 int alpha_beta(int depth, int maxminplayer,int alpha, int beta,std::ostream &fout){
     if(depth == 0){
-        return value(player) - 1.1*value(opponent);
+        return value(player) - 1.3*value(opponent);
     }
     if(first == true && player == BLACK){
         fout << 7 << " " << 7 << std::endl;
@@ -314,6 +328,14 @@ int alpha_beta(int depth, int maxminplayer,int alpha, int beta,std::ostream &fou
                     if(check_neighbor(i, j) == false)
                         continue;
                     board[i][j] = maxminplayer;
+                    if(depth == 3){
+                        int num = value(maxminplayer);
+                        if(num >= WIN_5){
+                            fout << i << " " << j << std::endl;
+                            fout.flush();
+                            return 0;
+                        }
+                    }
                     tmp = alpha_beta(depth - 1, opponent,alpha, beta, fout);
                     board[i][j] = EMPTY;
                     if(tmp > val){
