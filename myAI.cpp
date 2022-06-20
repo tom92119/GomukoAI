@@ -395,6 +395,7 @@ int main(int, char** argv) {
     fin.close();
     fout.close();
     return 0;
+
     
 }
 //./main ./myAI ./baseline1
