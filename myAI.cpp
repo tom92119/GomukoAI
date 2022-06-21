@@ -5,6 +5,7 @@
 #include <array>
 #include <algorithm>
 #include <climits>
+#define DEPTH 3
 
 enum SPOT_STATE {
     EMPTY = 0,
@@ -260,7 +261,7 @@ int value(int chess){
 
 int MinMax(int depth, int maxminplayer, std::ostream &fout){
     if(depth == 0){
-        return value(player) - 1.1*value(opponent);
+        return value(player) - 1.3*value(opponent);
     }
     if(first == true && player == BLACK){
         fout << 7 << " " << 7 << std::endl;
@@ -277,7 +278,7 @@ int MinMax(int depth, int maxminplayer, std::ostream &fout){
                     if(check_neighbor(i, j) == false)
                         continue;
                     board[i][j] = maxminplayer;
-                    if(depth == 3){
+                    if(depth == DEPTH){
                         int num = value(maxminplayer);
                         if(num >= WIN_5){
                             fout << i << " " << j << std::endl;
@@ -288,7 +289,7 @@ int MinMax(int depth, int maxminplayer, std::ostream &fout){
                     tmp = MinMax(depth - 1, opponent, fout);
                     if(tmp > val){
                         val = tmp;
-                        if(depth == 3){
+                        if(depth == DEPTH){
                              fout << i << " " << j << std::endl;
                             fout.flush();
                         }
@@ -337,7 +338,7 @@ int alpha_beta(int depth, int maxminplayer,int alpha, int beta,std::ostream &fou
                     if(check_neighbor(i, j) == false)
                         continue;
                     board[i][j] = maxminplayer;
-                    if(depth == 3){
+                    if(depth == DEPTH){
                         int num = value(maxminplayer);
                         if(num >= WIN_5){
                             fout << i << " " << j << std::endl;
@@ -349,7 +350,7 @@ int alpha_beta(int depth, int maxminplayer,int alpha, int beta,std::ostream &fou
                     board[i][j] = EMPTY;
                     if(tmp > val){
                         val = tmp;
-                        if(depth == 3){
+                        if(depth == DEPTH){
                              fout << i << " " << j << std::endl;
                             fout.flush();
                         }
@@ -400,30 +401,12 @@ void read_board(std::ifstream& fin) {
     }
 }
 
-void write_valid_spot(std::ofstream& fout) {
-    srand(time(NULL));
-    int x, y;
-    // Keep updating the output until getting killed.
-    while(true) {
-        // Choose a random spot.
-        int x = (rand() % SIZE);
-        int y = (rand() % SIZE);
-        if (board[x][y] == EMPTY) {
-            fout << x << " " << y << std::endl;
-            // Remember to flush the output to ensure the last action is written to file.
-            fout.flush();
-        }
-    }
-}
-
-
 int main(int, char** argv) {
     std::ifstream fin(argv[1]);
     std::ofstream fout(argv[2]);
     read_board(fin);
     //MinMax(3, player, fout);
     alpha_beta(3, player,INT_MIN, INT_MAX, fout);
-    //write_valid_spot(fout);
     fin.close();
     fout.close();
     return 0;
